@@ -1,0 +1,79 @@
+Spring AOP
+AOP: Aspect Oriented Programming
+
+- 面向切面编程
+- 通过1）预编译方式和2）运行期动态代理实现程序功能的统一维护的一种技术
+- 主要功能：日志记录、性能统计、安全控制、事务处理、异常处理等等
+
+
+- 预编译：
+AspectJ
+
+-运行期动态代理（JDK动态代理、CGLib动态代理）
+SpringAOP、JbossAOP
+
+AOP概念：
+切面Aspect：日志记录、性能统计、安全控制、事务处理、异常处理
+连接点Jointpoint：程序执行过程的某个特定的点（类的某个方法）
+通知Advice：连接点上某个切面执行的动作
+切入点Pointcut：匹配连接点的断言
+引入Introduction：在不修改类代码的前提下，为类添加新的方法和属性
+目标对象Target Object： 被一个或者多个切面所通知的对象
+AOP代理AOP Proxy： AOP框架创建的对象，用来实现切面契约（aspect contract)
+织入Weaving： 把切面连接到应用程序对象上，创建一个被通知的对象
+
+Advice的类型
+Before advice
+After returning advice
+After throwing advice
+After(finally) advice
+Around advice
+
+有接口的实现
+- Spring AOP默认使用标准的JavaSE动态代理作为AOP代理，这使得任何接口（或者接口集）都可以被代理
+无接口的实现
+- Spring AOP中也可以使用CGLIB代理（如果一个业务对象并没有实现一个接口）
+
+二、Schema-based AOP XML配置式
+<aop:config>
+<aop:aspect>
+
+
+<bean id="moocAspect" class="com.imooc.aop.schema.advice.MoocAspect"></bean>
+	<bean id="aspectBiz" class="com.imooc.aop.schema.advice.biz.AspectBiz"></bean>
+	
+	<aop:config>
+		<aop:aspect id="moocAspectAOP" ref="moocAspect">
+			<aop:pointcut id="moocPointcut" expression="execution(* com.imooc.aop.schema.advice.biz.AspectBiz.biz(..))"/>
+			<aop:before method="before" pointcut-ref="moocPointcut"/>
+			<aop:after-returning method="afterReturning" pointcut-ref="moocPointcut"/>
+			<aop:after-throwing method="handleException" pointcut-ref="moocPointcut"/>
+			<aop:after method="after" pointcut-ref="moocPointcut"/>
+			<aop:around method="around" pointcut-ref="moocPointcut"/>
+			
+			<aop:before method="beforeInit" pointcut="execution(* com.imooc.aop.schema.advice.biz.AspectBiz.init(String, int)) 
+					and args(bizName, times)"/>
+			<aop:around method="aroundInit" pointcut="execution(* com.imooc.aop.schema.advice.biz.AspectBiz.init(String, int)) 
+					and args(bizName, times)"/>
+		</aop:aspect>		
+	</aop:config>
+
+2) Introductions
+- Introductions允许一个Aspect声明一个实现指定接口的通知对象，并且提供了一个接口实现类来代表这些对象
+
+<aop:declare-parents types-matching="com.imooc.aop.schema.advice.biz.*" implement-interface="com.imooc.aop.schema.advice.biz.Fit" 
+				default-impl="com.imooc.aop.schema.advice.biz.FitImpl"/>
+
+三、Advisors
+
+- 使用在事务相关的advice中
+
+四。AspectJ
+
+@Aspect
+
+@Before
+
+@AfterThrowing
+
+@Pointcut
